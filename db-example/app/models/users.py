@@ -31,12 +31,12 @@ class User(db.Model, mixins.CRUDMixin):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __init__(self, email, password, nickname=None):
-        self.account = email
+        self.email = email
         self.password = generate_password_hash(password)
         self.nickname = email or nickname
 
     def __repr__(self):
-        return "<User(account='%s')>" % (self.account)
+        return "<User(email='%s')>" % (self.email)
 
     def set_password(self, password):
         """The default method is sha1 to hash password"""

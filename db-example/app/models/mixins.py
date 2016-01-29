@@ -9,13 +9,13 @@ from .. import db
 
 
 class CRUDMixin(object):
-    def add(self, resource):
-        db.session.add(resource)
-        return db.session.commit()
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
 
     def update(self):
-        return db.session.commit()
+        db.session.commit()
 
-    def delete(self, resource):
-        db.session.delete(resource)
-        return db.session.commit()
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()

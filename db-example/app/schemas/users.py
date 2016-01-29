@@ -13,15 +13,13 @@ Field classes for various types of data.
 Meta
     http://marshmallow.readthedocs.org/en/latest/api_reference.html#marshmallow.Schema.Meta
 """
-from flask import url_for
-from flask import request
-
 from marshmallow import Schema, fields, validate
 
 
 class SignupSchema(Schema):
-    account = fields.Email(required=True, validate=validate.Length(max=255))
-    password = fields.Str(required=True, validate=validate.Length(max=255))
+    email = fields.Email(required=True, validate=validate.Length(max=255))
+    password = fields.Str(required=True, validate=validate.Length(max=64))
+    nickname = fields.Str(validate=validate.Length(max=255))
 
     class Meta:
         strict = True
