@@ -1,4 +1,9 @@
-"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#  @first_date    20160129
+#  @date          20160129
+#  @version       0.0
+"""The model is designed for Users API
 
 Security Helpers about werkzeug with generate_password_hash and check_password_hash:
     http://werkzeug.pocoo.org/docs/0.11/utils/#module-werkzeug.security

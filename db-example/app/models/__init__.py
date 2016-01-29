@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#  @first_date    20160129
+#  @date          20160129
+#  @version       0.0
 """Models
 
 https://flask-migrate.readthedocs.org/en/latest/
