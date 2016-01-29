@@ -17,6 +17,18 @@ class FlaskConfig(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
 
 
+class FlaskRestfulConfig(object):
+    """It's 0.3.4 of version for flask-restful config
+
+    ERROR_404_HELP:
+        http://flask-restful-cn.readthedocs.org/en/0.3.4/quickstart.html?highlight=config#endpoints
+
+    BUNDLE_ERRORS:
+        http://flask-restful-cn.readthedocs.org/en/0.3.4/reqparse.html#error-handling
+    """
+    BUNDLE_ERRORS = True
+
+
 class FlaskSQLAlchemyCofig(object):
     """It's 2.1 of version for Flask-SQLAlchemy config
 
@@ -29,7 +41,8 @@ class FlaskSQLAlchemyCofig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
-class BaseConfig(local_configs.LocalConfig, FlaskConfig, FlaskSQLAlchemyCofig):
+class BaseConfig(local_configs.LocalConfig, FlaskConfig,
+                 FlaskRestfulConfig, FlaskSQLAlchemyCofig):
     pass
 
 
