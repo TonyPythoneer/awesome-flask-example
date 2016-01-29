@@ -60,4 +60,17 @@ def create_app(config_name):
         }
         return jsonify(res_data), 400
 
+
+    @app.errorhandler(422)
+    def handle_bad_request_by_webargs(err):
+        from flask import jsonify
+        msgs = {k: v.pop() for k, v in err.data['messages'].items()}
+        return jsonify({
+            'message': "Invalid request could not be understood "
+                       "by the server due to malformed syntax.",
+            'errors': msgs,
+        }), 400
+        return jsonify(res_data), 400
+
+
     return app
