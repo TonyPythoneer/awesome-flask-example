@@ -8,18 +8,21 @@
 from flask import Flask
 
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.marshmallow import Marshmallow
 
 import configs
 
 
 # Initializing process: This list is created extension object
 db = SQLAlchemy()
+ma = Marshmallow()
 
 
 def init_exts(app):
     '''Initializing the flask app with extensions'''
     extensions = (
         db,
+        ma,  # Flask-SQLAlchemy must be initialized before Flask-Marshmallow.
     )
     for extension in extensions:
         extension.init_app(app)
@@ -46,5 +49,15 @@ def create_app(config_name):
 
     # Initializing process: Initializing the flask app with blueprints
     init_bps(app)
+
+    # temp: errorhandler
+    @app.errorhandler(400)
+    def handle_bad_request_by_reqparse(err):
+        from flask import jsonify
+        res_data = {
+            'message': 'Bad Request',
+            'errors': err.data['message']
+        }
+        return jsonify(res_data), 400
 
     return app
