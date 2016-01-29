@@ -7,4 +7,4 @@ When manage.py imports it, it must include total modes
 and can be detected by Alembic. It ensures
 that migrations will migrate on database.
 """
-from .auth import User
+from .users import User
