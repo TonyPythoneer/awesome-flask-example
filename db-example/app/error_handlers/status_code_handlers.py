@@ -10,4 +10,3 @@ def handle_bad_request_by_reqparse(err):
         'errors': err.data['message']
     }
     return jsonify(res_data), 400
-

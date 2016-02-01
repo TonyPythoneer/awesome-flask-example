@@ -30,6 +30,9 @@ class User(db.Model, mixins.CRUDMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # relationship
+    devices = db.relationship('Device', backref='device', lazy='dynamic')
+
     def __init__(self, email, password, nickname=None):
         self.email = email
         self.password = generate_password_hash(password)

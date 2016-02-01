@@ -13,3 +13,4 @@ and can be detected by Alembic. It ensures
 that migrations will migrate on database.
 """
 from .users import User
+from .devices import Device

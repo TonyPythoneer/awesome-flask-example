@@ -24,7 +24,7 @@ class Signup(MethodView):
         print args
         user = User(**args)
         user.add()
-         '''
+        '''
         session.add(user)
         try:
             session.commit()
