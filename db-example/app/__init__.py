@@ -12,6 +12,7 @@ from flask.ext.marshmallow import Marshmallow
 
 import configs
 
+
 # Initializing process: This package is main flask app
 app = Flask(__name__)
 app.config.from_object(configs.CONFIGS['default'])
@@ -52,9 +53,9 @@ def init_blueprints(app):
 
 def init_error_handlers(app):
     '''import error handler function'''
-    from error_handlers.built_in_exception_handlers import *
-    from error_handlers.status_code_handlers import *
-    from error_handlers.sqlachelmy_handlers import *
+    from .error_handlers.built_in_exception_handlers import *
+    from .error_handlers.status_code_handlers import *
+    from .error_handlers.sqlachelmy_handlers import *
 
 
 def create_app():
