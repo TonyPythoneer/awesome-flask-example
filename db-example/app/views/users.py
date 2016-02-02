@@ -22,7 +22,7 @@ from .mixins import RestfulViewMixin
 users_bp = Blueprint('users', __name__)
 
 
-class Signup(MethodView):
+class Signup(RestfulViewMixin, MethodView):
 
     @use_args(SignupSchema, locations=('json',))
     def post(self, args):
@@ -31,7 +31,7 @@ class Signup(MethodView):
             user.add()
         except IntegrityError as err:
             err.data = user_errors.USER_ERR_1001_REGISTERED_ACC
-        return Response(status=201, mimetype="application/json")
+        return self.get_response(status=201)
 
 
 class UserDetail(RestfulViewMixin, MethodView):
@@ -42,20 +42,19 @@ class UserDetail(RestfulViewMixin, MethodView):
         user = self.get_object(id)
         serializer = self.get_serializer()
         data = serializer.dump(user).data
-        return Response(response=json.dumps({"data": data}), status=200,
-                        mimetype="application/json")
+        return self.get_response(data={"data": data}, status=200)
 
     @use_args(UserDetailUpdateSchema, locations=('json',))
     def put(self, args, id):
         user = self.get_object(id)
         user.nickname = args.get('nickname', user.nickname)
         user.update()
-        return Response(status=200, mimetype="application/json")
+        return self.get_response(status=200)
 
     def delete(self, id):
         user = self.get_object(id)
         user.delete()
-        return Response(status=204, mimetype="application/json")
+        return self.get_response(status=204)
 
 
 # Url patterns: To register views in blueprint

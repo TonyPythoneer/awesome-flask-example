@@ -7,7 +7,7 @@
 
 https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/generics.py
 """
-from flask import abort
+from flask import abort, Response, json
 
 
 class RestfulViewMixin(object):
@@ -23,7 +23,7 @@ class RestfulViewMixin(object):
         https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/generics.py#L76
         """
         if not self.model:
-            abort(500)
+            raise NotImplementedError("RestfulViewMixin does't be set model attribute")
         return self.model.query.get_or_404(ident)
 
     def get_serializer(self, *args, **kwargs):
@@ -32,11 +32,15 @@ class RestfulViewMixin(object):
         https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/generics.py#L104
         """
         if not self.serializer_class:
-            abort(500)
+            raise NotImplementedError("RestfulViewMixin does't be set serializer_class attribute")
         serializer_class = self.serializer_class()
         return serializer_class
 
-    '''
-    def get_response(self):
-        return Response(response=None, status=200)
-    '''
+    def get_response(self, data=None, status=200, headers=None,
+                     mimetype=None, content_type="application/json",
+                     direct_passthrough=False):
+        if data:
+            data = json.dumps(data)
+        return Response(data, status, headers,
+                        mimetype, content_type,
+                        direct_passthrough)
