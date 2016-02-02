@@ -23,9 +23,7 @@ class DeviceSchema(Schema):
         'mobile',
     )
 
-    email = fields.Email(required=True, validate=validate.Length(max=255))
-    password = fields.Str(required=True, validate=validate.Length(max=64))
-    nickname = fields.Str(validate=validate.OneOf(choices=DEVICE_TYPE))
+    device_type = fields.Str(validate=validate.OneOf(choices=DEVICE_TYPE))
 
     class Meta:
         strict = True
