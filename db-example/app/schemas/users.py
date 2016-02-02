@@ -15,34 +15,40 @@ Meta
 """
 from marshmallow import Schema, fields, validate
 
+# Field definations
+emailfield = fields.Email(required=True, validate=validate.Length(max=255))
+passwordfield = fields.Str(required=True, validate=validate.Length(max=64))
+nicknamefield = fields.Str(validate=validate.Length(max=255))
 
+
+# Request Schemas
 class SignupSchema(Schema):
-    email = fields.Email(required=True, validate=validate.Length(max=255))
-    password = fields.Str(required=True, validate=validate.Length(max=64))
-    nickname = fields.Str(validate=validate.Length(max=255))
+    email = emailfield
+    password = passwordfield
+    nickname = nicknamefield
 
     class Meta:
         strict = True
 
 
 class UserDetailUpdateSchema(Schema):
-    nickname = fields.Str(validate=validate.Length(max=255))
+    nickname = nicknamefield
 
     class Meta:
         strict = True
 
 
 class LoginSchema(Schema):
-    email = fields.Email(required=True, validate=validate.Length(max=255))
-    password = fields.Str(required=True, validate=validate.Length(max=64))
+    email = emailfield
+    password = passwordfield
 
     class Meta:
         strict = True
 
 
 class RestPasswordSchema(Schema):
-    email = fields.Email(required=True, validate=validate.Length(max=255))
-    password1 = fields.Str(required=True, validate=validate.Length(max=64))
+    email = emailfield
+    password1 = passwordfield
     password2 = fields.Str(required=True, validate=validate.Equal(comparable=password1))
 
     class Meta:
