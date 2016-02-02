@@ -30,3 +30,20 @@ class UserDetailUpdateSchema(Schema):
 
     class Meta:
         strict = True
+
+
+class LoginSchema(Schema):
+    email = fields.Email(required=True, validate=validate.Length(max=255))
+    password = fields.Str(required=True, validate=validate.Length(max=64))
+
+    class Meta:
+        strict = True
+
+
+class RestPasswordSchema(Schema):
+    email = fields.Email(required=True, validate=validate.Length(max=255))
+    password1 = fields.Str(required=True, validate=validate.Length(max=64))
+    password2 = fields.Str(required=True, validate=validate.Equal(comparable=password1))
+
+    class Meta:
+        strict = True
