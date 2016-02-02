@@ -23,3 +23,10 @@ class SignupSchema(Schema):
 
     class Meta:
         strict = True
+
+
+class UserDetailUpdateSchema(Schema):
+    nickname = fields.Str(validate=validate.Length(max=255))
+
+    class Meta:
+        strict = True
