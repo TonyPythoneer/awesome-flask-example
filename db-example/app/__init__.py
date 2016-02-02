@@ -12,65 +12,59 @@ from flask.ext.marshmallow import Marshmallow
 
 import configs
 
+# Initializing process: This package is main flask app
+app = Flask(__name__)
+app.config.from_object(configs.CONFIGS['default'])
 
-# Initializing process: This list is created extension object
+
+# Initializing process: This extesion list is created extension object
 db = SQLAlchemy()
 ma = Marshmallow()
 
 
-def init_exts(app):
+def init_extensions(app):
     '''Initializing the flask app with extensions'''
+    # Extension List: Wrap up the all extensions
     extensions = (
         db,
-        ma,  # Flask-SQLAlchemy must be initialized before Flask-Marshmallow.
+        ma,  # Warning: Flask-SQLAlchemy must be initialized before Flask-Marshmallow.
     )
+
+    # Initializing process: Start to initial each extension
     for extension in extensions:
         extension.init_app(app)
 
 
-def init_bps(app):
+def init_blueprints(app):
     '''Initializing the flask app with blueprints'''
+    # Blueprint source: Import the blueprints and note these sources
     from .views import users
 
+    # Blueprint List: Wrap up the all blueprints
     buleprints = (
         dict(blueprint=users.users_bp, url_prefix='/users'),
     )
+
+    # Initializing process: Start to initial each blueprint
     for blueprint in buleprints:
         app.register_blueprint(**blueprint)
 
 
-def create_app(config_name):
+def init_error_handlers(app):
+    '''import error handler function'''
+    from error_handlers.status_code_handlers import *
+    from error_handlers.sqlachelmy_handlers import *
+
+
+def create_app():
     '''It's a factory.'''
-    app = Flask(__name__)
-    app.config.from_object(configs.CONFIGS[config_name])
+    # Initializing process: Initializing the main flask app with extensions
+    init_extensions(app)
 
-    # Initializing process: Initializing the flask app with extensions
-    init_exts(app)
+    # Initializing process: Initializing the main flask app with blueprints
+    init_blueprints(app)
 
-    # Initializing process: Initializing the flask app with blueprints
-    init_bps(app)
-
-    # temp: errorhandler
-    @app.errorhandler(400)
-    def handle_bad_request_by_reqparse(err):
-        from flask import jsonify
-        res_data = {
-            'message': 'Bad Request',
-            'errors': err.data['message']
-        }
-        return jsonify(res_data), 400
-
-
-    @app.errorhandler(422)
-    def handle_bad_request_by_webargs(err):
-        from flask import jsonify
-        msgs = {k: v.pop() for k, v in err.data['messages'].items()}
-        return jsonify({
-            'message': "Invalid request could not be understood "
-                       "by the server due to malformed syntax.",
-            'errors': msgs,
-        }), 400
-        return jsonify(res_data), 400
-
+    # Initializing process: import error handlers
+    init_error_handlers(app)
 
     return app

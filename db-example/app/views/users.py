@@ -7,11 +7,14 @@
 """
 from flask import Blueprint, Response
 from flask.views import MethodView
+
 from webargs.flaskparser import use_args
+from sqlalchemy.exc import IntegrityError
 
 from .. import db
 from ..models.users import User
 from ..schemas.users import SignupSchema
+from ..error_handlers import user_errors
 
 
 users_bp = Blueprint('users', __name__)
@@ -21,19 +24,12 @@ class Signup(MethodView):
 
     @use_args(SignupSchema, locations=('json',))
     def post(self, args):
-        print args
         user = User(**args)
-        user.add()
-        '''
-        session.add(user)
         try:
-            session.commit()
-        except IntegrityError as e:
-            e.data = user_errors.USER_ERR_1001_REGISTERED_ACC
-            raise
-        '''
+            user.add()
+        except IntegrityError as err:
+            err.data = user_errors.USER_ERR_1001_REGISTERED_ACC
         return Response(status=201, mimetype="application/json")
-        return 'OK', 200
 
 
 # Url patterns: To register views in blueprint
