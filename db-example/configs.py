@@ -43,11 +43,18 @@ class FlaskSQLAlchemyCofig(object):
 
 class BaseConfig(local_configs.LocalConfig, FlaskConfig,
                  FlaskRestfulConfig, FlaskSQLAlchemyCofig):
+    """It's a completed base integration class.
+
+    There's no need to do more.
+    """
     pass
 
 
 class DevelopmentConfig(BaseConfig):
+    """It's standard setting -- DevelopmentConfig.
+    """
     DEBUG = True
+    SQLALCHEMY_ECHO = True
 
 
 CONFIGS = {
