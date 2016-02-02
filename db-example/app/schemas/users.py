@@ -16,23 +16,24 @@ Meta
 from marshmallow import Schema, fields, validate
 
 # Field definations
-emailfield = fields.Email(required=True, validate=validate.Length(max=255))
-passwordfield = fields.Str(required=True, validate=validate.Length(max=64))
-nicknamefield = fields.Str(validate=validate.Length(max=255))
+class CommonFields(object):
+    emailfield = fields.Email(required=True, validate=validate.Length(max=255))
+    passwordfield = fields.Str(required=True, validate=validate.Length(max=64))
+    nicknamefield = fields.Str(validate=validate.Length(max=255))
 
 
 # Request Schemas
 class SignupSchema(Schema):
-    email = emailfield
-    password = passwordfield
-    nickname = nicknamefield
+    email = CommonFields.emailfield
+    password = CommonFields.passwordfield
+    nickname = CommonFields.nicknamefield
 
     class Meta:
         strict = True
 
 
 class UserDetailUpdateSchema(Schema):
-    nickname = nicknamefield
+    nickname = CommonFields.nicknamefield
 
     class Meta:
         strict = True
@@ -40,15 +41,15 @@ class UserDetailUpdateSchema(Schema):
 
 class LoginSchema(Schema):
     email = emailfield
-    password = passwordfield
+    password = CommonFields.passwordfield
 
     class Meta:
         strict = True
 
 
 class RestPasswordSchema(Schema):
-    email = emailfield
-    password1 = passwordfield
+    email = CommonFields.emailfield
+    password1 = CommonFields.passwordfield
     password2 = fields.Str(required=True, validate=validate.Equal(comparable=password1))
 
     class Meta:
