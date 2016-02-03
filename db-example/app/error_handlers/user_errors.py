@@ -14,7 +14,7 @@ USER_ERR_1001_REGISTERED_ACC = {
     "message": "The account is registered."
 }
 
-USER_ERR_1002_INEXISTENT_ACC = {
+USER_ERR_1002_INCORRECT_OLD_PWD = {
     "code": 1002,
-    "message": "Account doesn't exist"
+    "message": "Incorrect old password"
 }

@@ -13,7 +13,8 @@ Field classes for various types of data.
 Meta
     http://marshmallow.readthedocs.org/en/latest/api_reference.html#marshmallow.Schema.Meta
 """
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields, validate, validates_schema, ValidationError
+
 
 # Field definations
 class CommonFields(object):
@@ -47,10 +48,9 @@ class LoginSchema(Schema):
         strict = True
 
 
-class RestPasswordSchema(Schema):
-    email = CommonFields.emailfield
-    password1 = CommonFields.passwordfield
-    password2 = fields.Str(required=True, validate=validate.Equal(comparable=password1))
+class ResetPasswordSchema(Schema):
+    old_password = CommonFields.passwordfield
+    new_password = CommonFields.passwordfield
 
     class Meta:
         strict = True

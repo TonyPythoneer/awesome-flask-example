@@ -7,7 +7,7 @@
 """
 from flask.views import MethodView
 
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_required
 
 from webargs.flaskparser import use_args
 
@@ -45,6 +45,7 @@ class UserDetailView(RestfulViewMixin, MethodView):
 
 class AboutMeView(RestfulViewMixin, MethodView):
     serializer_class = UserSerializer
+    decorators = (login_required,)
 
     def get(self):
         user = current_user
@@ -67,4 +68,4 @@ class AboutMeView(RestfulViewMixin, MethodView):
 
 # Url patterns: To register views in blueprint
 users_bp.add_url_rule('/<int:id>', view_func=UserDetailView.as_view('user-detail'))
-users_bp.add_url_rule('/me', view_func=UserDetailView.as_view('about-me'))
+users_bp.add_url_rule('/me', view_func=AboutMeView.as_view('about-me'))

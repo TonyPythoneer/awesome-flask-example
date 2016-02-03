@@ -4,25 +4,28 @@ from .. import app
 
 
 __all__ = [
-    "handle_noresultfound_exception",
-    "handle_bad_request_by_webargs"
+    "handle_notfound",  # 404
+    "handle_unauthorized",  # 405
+    "handle_unprocessable_entity_by_webargs",  # 422
 ]
 
 
 @app.errorhandler(404)
-def handle_noresultfound_exception(err):
-    """Execute query but it doesn't find the data
-
-    return example:
-        {
-            "message": "Not Found"
-        }
+def handle_notfound(err):
+    """It's possible to be caused by url or sqlalchemy
     """
     return jsonify({"message": "Not Found"}), 404
 
 
+@app.errorhandler(405)
+def handle_unauthorized(err):
+    """It's possible to be caused by login
+    """
+    return jsonify({"message": "Unauthorized"}), 405
+
+
 @app.errorhandler(422)
-def handle_bad_request_by_webargs(err):
+def handle_unprocessable_entity_by_webargs(err):
     msgs = {k: v.pop() for k, v in err.data['messages'].items()}
     return jsonify({
         'message': "Invalid request could not be understood "
