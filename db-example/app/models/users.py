@@ -10,13 +10,15 @@ Security Helpers about werkzeug with generate_password_hash and check_password_h
 """
 from datetime import datetime
 
+from flask.ext.login import UserMixin
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .. import db
 from . import mixins
+from .. import db, login_manager
 
 
-class User(db.Model, mixins.CRUDMixin):
+class User(UserMixin, mixins.CRUDMixin, db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -48,3 +50,16 @@ class User(db.Model, mixins.CRUDMixin):
     def check_password(self, password):
         """Verify password"""
         return check_password_hash(self.password, password)
+
+    @classmethod
+    def authenticate(cls, email=None, password=None):
+        """Get the user"""
+        user = cls.query.filter_by(email=email).first()
+        if not user.check_password(password):
+            return None
+        return user
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))

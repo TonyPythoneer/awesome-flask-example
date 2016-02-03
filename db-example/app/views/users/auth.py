@@ -7,6 +7,8 @@
 """
 from flask.views import MethodView
 
+from flask.ext.login import login_user, logout_user, login_required, current_user
+
 from sqlalchemy.exc import IntegrityError
 from webargs.flaskparser import use_args
 
@@ -33,11 +35,18 @@ class SignupView(RestfulViewMixin, MethodView):
 class LoginView(RestfulViewMixin, MethodView):
 
     @use_args(LoginSchema, locations=('json',))
-    def post(self):
-        pass
+    def post(self, args):
+        user = User.authenticate(**args)
+        login_user(user)
+        return self.get_response(status=200)
+
 
 class LogoutView(RestfulViewMixin, MethodView):
-    pass
+    decorators = (login_required,)
+
+    def post(self):
+        logout_user()
+        return self.get_response(status=200)
 
 
 # Url patterns: To register views in blueprint

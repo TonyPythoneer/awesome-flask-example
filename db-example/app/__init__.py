@@ -9,7 +9,7 @@ from flask import Flask
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.marshmallow import Marshmallow
-
+from flask.ext.login import LoginManager
 import configs
 
 
@@ -22,6 +22,8 @@ app.config.from_object(configs.CONFIGS['default'])
 db = SQLAlchemy()
 ma = Marshmallow()
 
+login_manager = LoginManager()
+
 
 def init_extensions(app):
     '''Initializing the flask app with extensions'''
@@ -29,6 +31,7 @@ def init_extensions(app):
     extensions = (
         db,
         ma,  # Warning: Flask-SQLAlchemy must be initialized before Flask-Marshmallow.
+        login_manager,
     )
 
     # Initializing process: Start to initial each extension

@@ -32,7 +32,7 @@ class SignupSchema(Schema):
         strict = True
 
 
-class UserDetailUpdateSchema(Schema):
+class ProfileUpdateSchema(Schema):
     nickname = CommonFields.nicknamefield
 
     class Meta:
@@ -40,7 +40,7 @@ class UserDetailUpdateSchema(Schema):
 
 
 class LoginSchema(Schema):
-    email = emailfield
+    email = CommonFields.emailfield
     password = CommonFields.passwordfield
 
     class Meta:
