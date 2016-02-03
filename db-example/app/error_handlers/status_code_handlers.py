@@ -5,7 +5,7 @@ from .. import app
 
 __all__ = [
     "handle_notfound",  # 404
-    "handle_unauthorized",  # 405
+    "handle_unauthorized",  # 401
     "handle_unprocessable_entity_by_webargs",  # 422
 ]
 
@@ -17,11 +17,11 @@ def handle_notfound(err):
     return jsonify({"message": "Not Found"}), 404
 
 
-@app.errorhandler(405)
+@app.errorhandler(401)
 def handle_unauthorized(err):
     """It's possible to be caused by login
     """
-    return jsonify({"message": "Unauthorized"}), 405
+    return jsonify({"message": "Unauthorized"}), 401
 
 
 @app.errorhandler(422)

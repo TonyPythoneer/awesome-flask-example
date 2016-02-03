@@ -39,7 +39,7 @@ class LoginView(RestfulViewMixin, MethodView):
     def post(self, args):
         user = User.authenticate(**args)
         if not user:
-            abort(405)
+            abort(401)
         login_user(user)
         return self.get_response(status=200)
 
@@ -59,7 +59,7 @@ class ResetPasswordView(RestfulViewMixin, MethodView):
     def put(self, args):
         user = current_user
         if not user.check_password(args['old_password']):
-            abort(405)
+            abort(401)
         user.set_password(args['new_password'])
         user.update()
         return self.get_response(status=200)
