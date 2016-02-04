@@ -8,9 +8,11 @@
 Security Helpers about werkzeug with generate_password_hash and check_password_hash:
     http://werkzeug.pocoo.org/docs/0.11/utils/#module-werkzeug.security
 """
-from datetime import datetime
+import binascii
+from datetime import datetime, timedelta
+import os
 
-from flask.ext.login import UserMixin
+from flask.ext.login import UserMixin, make_secure_token
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -34,6 +36,9 @@ class User(UserMixin, mixins.CRUDMixin, db.Model):
 
     # relationship
     devices = db.relationship('Device', backref='device', lazy='dynamic')
+
+    last_login = db.Column(db.DateTime)
+    key = relationship("Token", uselist=False, backref=db.backref("User", uselist=False))
 
     def __init__(self, email, password, nickname=None):
         self.email = email
@@ -59,7 +64,53 @@ class User(UserMixin, mixins.CRUDMixin, db.Model):
             return None
         return user
 
+    def login(self):
+        self.last_login = datetime.utcnow()
+        token = Token.query.first(self)
+        if token:
+            return token
+        token.generate_key()
+        token.save()
+        return token
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    def logout(self):
+        token = Token.query.first(self)
+        if token:
+            token.delete()
+
+    def is_expired(self):
+        return self.token.is_expired()
+
+
+class Token(mixins.CRUDMixin, db.Model):
+    __tablename__ = 'token'
+    AUTH_TOKEN_DURATION = 60*60
+
+    key = db.Column(db.String(40), unique=True, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User", back_populates="Token")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def generate_key(self):
+        self.key = binascii.hexlify(os.urandom(20)).decode()
+        return self.key
+
+    def is_expired(self):
+        diff = datetime.utcnow - self.created_at
+        return diff > timedelta(seconds=self.AUTH_TOKEN_DURATION)
+
+
+@login_manager.request_loader
+def load_request(request):
+    api_key = request.headers.get('Authorization', '')
+    if api_key:
+        user = User.query.filter_by(key=api_key).first()
+        if user:
+            return user
+    return None
+
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    from flask import jsonify
+    return jsonify({"message": "Unauthorized"}), 401
