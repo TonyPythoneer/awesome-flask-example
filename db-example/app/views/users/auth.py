@@ -40,8 +40,7 @@ class LoginView(RestfulViewMixin, MethodView):
         user = User.authenticate(**args)
         if not user:
             abort(401)
-        user.login()
-        key = user.token.key
+        key = user.login()  # It will return key
         return self.get_response({"key": key}, status=200)
 
 

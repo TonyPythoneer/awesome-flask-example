@@ -73,12 +73,15 @@ class User(UserMixin, mixins.CRUDMixin, db.Model):
 
     def login(self):
         self.last_login = datetime.utcnow()
-        # Delete old token
+        # Update token
         if self.token:
-            self.token.delete()
-        # Create old token
+            self.token.update()
+            return self.token.key
+        # Create token
         token = Token(user_id=self.id)
         token.add()
+        return self.token.key
+
 
     def logout(self):
         if self.token:
@@ -108,7 +111,8 @@ class Token(mixins.CRUDMixin, db.Model):
         self.key = key
 
     def is_expired(self):
-        diff = datetime.utcnow - self.updated_at
+        """Check expired"""
+        diff = datetime.utcnow() - self.updated_at
         is_expired = diff > timedelta(seconds=self.AUTH_TOKEN_DURATION)
         return is_expired
 
@@ -120,6 +124,7 @@ class Token(mixins.CRUDMixin, db.Model):
 
     def update(self):
         """It's Create of CRUD."""
+        self.generate_key()
         db.session.commit()
 
 
