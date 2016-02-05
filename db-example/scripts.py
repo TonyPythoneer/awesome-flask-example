@@ -6,7 +6,8 @@ from app import models
 
 
 def make_shell_context():
-    return dict(app=app, db=db, models=models)
+    bases = {m: getattr(models, m) for m in dir(models) if m[0].isupper()}
+    return dict(app=app, db=db, models=models, **bases)
 
 
 class Hello(Command):

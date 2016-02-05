@@ -11,6 +11,9 @@ from .. import db
 from . import mixins
 
 
+__all__ = ["Device"]
+
+
 class Device(db.Model, mixins.CRUDMixin):
     __tablename__ = 'device'
 
