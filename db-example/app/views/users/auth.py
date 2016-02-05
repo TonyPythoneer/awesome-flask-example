@@ -8,7 +8,7 @@
 from flask import abort
 from flask.views import MethodView
 
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask.ext.login import login_required, current_user
 
 from sqlalchemy.exc import IntegrityError
 from webargs.flaskparser import use_args
@@ -40,15 +40,17 @@ class LoginView(RestfulViewMixin, MethodView):
         user = User.authenticate(**args)
         if not user:
             abort(401)
-        login_user(user)
-        return self.get_response(status=200)
+        user.login()
+        key = user.token.key
+        return self.get_response({"key": key}, status=200)
 
 
 class LogoutView(RestfulViewMixin, MethodView):
     decorators = (login_required,)
 
     def post(self):
-        logout_user()
+        user = current_user
+        user.logout()
         return self.get_response(status=200)
 
 

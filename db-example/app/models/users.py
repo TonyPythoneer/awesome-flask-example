@@ -57,6 +57,8 @@ class User(UserMixin, mixins.CRUDMixin, db.Model):
     def authenticate(cls, email=None, password=None):
         """Get the user"""
         user = cls.query.filter_by(email=email).first()
+        if not user:
+            return None
         if not user.check_password(password):
             return None
         return user
@@ -71,11 +73,10 @@ class User(UserMixin, mixins.CRUDMixin, db.Model):
 
     def login(self):
         self.last_login = datetime.utcnow()
-        # Update token
+        # Delete old token
         if self.token:
-            self.token.generate_key()
-            self.token.update()
-        # Create token
+            self.token.delete()
+        # Create old token
         token = Token(user_id=self.id)
         token.add()
 
@@ -91,8 +92,8 @@ class Token(mixins.CRUDMixin, db.Model):
     __tablename__ = 'token'
     AUTH_TOKEN_DURATION = 60*60
 
-    key = db.Column(db.String(128), primary_key=True, index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, index=True)
+    key = db.Column(db.String(128), unique=True, index=True)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __init__(self, user_id):
@@ -107,7 +108,7 @@ class Token(mixins.CRUDMixin, db.Model):
         self.key = key
 
     def is_expired(self):
-        diff = datetime.utcnow - self.created_at
+        diff = datetime.utcnow - self.updated_at
         is_expired = diff > timedelta(seconds=self.AUTH_TOKEN_DURATION)
         return is_expired
 
@@ -118,18 +119,28 @@ class Token(mixins.CRUDMixin, db.Model):
         db.session.commit()
 
     def update(self):
-        """It's Update of CRUD."""
-        self.generate_key()
+        """It's Create of CRUD."""
         db.session.commit()
 
 
 @login_manager.request_loader
 def load_request(request):
+    # Request process: Get token from Authorization of headers
     auth_token = request.headers.get('Authorization', '')
-    if auth_token:
-        user = User.query.filter(Token.key == auth_token).first()
-        return user
-    return None
+    if not auth_token:
+        return None
+
+    # Model process: Get user by token
+    user = User.query.filter(Token.key == auth_token).first()
+    if not user:
+        return None
+
+    # Validation process: The token is expired or not
+    if user.is_expired():
+        user.token.delete()
+        return None
+
+    return user
 
 
 @login_manager.unauthorized_handler

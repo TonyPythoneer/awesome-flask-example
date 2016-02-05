@@ -42,7 +42,7 @@ class DevelopmentConfig(BaseConfig):
     """It's standard setting -- DevelopmentConfig.
     """
     DEBUG = True
-    #SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = True
 
 
 CONFIGS = {
