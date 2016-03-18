@@ -64,3 +64,4 @@ target/
 #
 migrations/
 local_configs.py
+local.py
